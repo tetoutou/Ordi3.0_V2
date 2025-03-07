@@ -1,9 +1,19 @@
 from flask import Flask, render_template, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import os
+from api_error_handler import api_error_handler
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ordi3.db'
+
+# Configuration conditionnelle de la base de données
+if os.environ.get('VERCEL_REGION'):  # Vérifier si nous sommes sur Vercel
+    # En production sur Vercel, nous utilisons une base de données en mémoire
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+else:
+    # En développement local, nous utilisons un fichier SQLite
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ordi3.db'
+
 app.config['SECRET_KEY'] = 'dev-key-replace-in-production'
 db = SQLAlchemy(app)
 
@@ -33,9 +43,14 @@ class EquipementStock(db.Model):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        app.logger.error(f"Erreur sur la route principale: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/enlevements', methods=['GET'])
+@api_error_handler
 def get_enlevements():
     print("Récupération des demandes")  # Debug
     demandes = DemandeEnlevement.query.order_by(DemandeEnlevement.date.desc()).all()
@@ -50,6 +65,7 @@ def get_enlevements():
     } for demande in demandes])
 
 @app.route('/api/enlevements', methods=['POST'])
+@api_error_handler
 def create_enlevement():
     data = request.json
     try:
@@ -71,6 +87,7 @@ def create_enlevement():
         return jsonify({'error': str(e)}), 400
 
 @app.route('/api/enlevements/<int:id>', methods=['PUT'])
+@api_error_handler
 def update_enlevement(id):
     demande = DemandeEnlevement.query.get_or_404(id)
     data = request.json
@@ -93,6 +110,7 @@ def update_enlevement(id):
     return jsonify({'message': 'Demande mise à jour avec succès'})
 
 @app.route('/api/enlevements/<int:id>', methods=['GET'])
+@api_error_handler
 def get_enlevement(id):
     demande = DemandeEnlevement.query.get_or_404(id)
     return jsonify({
@@ -108,6 +126,7 @@ def get_enlevement(id):
 
 # Routes pour la gestion du stock
 @app.route('/api/stock', methods=['GET'])
+@api_error_handler
 def get_stock():
     equipements = EquipementStock.query.all()
     return jsonify([{
@@ -127,6 +146,7 @@ def get_stock():
     } for e in equipements])
 
 @app.route('/api/stock', methods=['POST'])
+@api_error_handler
 def add_stock():
     data = request.json
     nouvel_equipement = EquipementStock(
@@ -145,6 +165,7 @@ def add_stock():
     return jsonify({'message': 'Équipement ajouté avec succès'}), 201
 
 @app.route('/api/stock/<int:id>', methods=['PUT'])
+@api_error_handler
 def update_stock(id):
     equipement = EquipementStock.query.get_or_404(id)
     data = request.json
@@ -156,7 +177,20 @@ def update_stock(id):
     db.session.commit()
     return jsonify({'message': 'Équipement mis à jour avec succès'})
 
+@app.route('/api/stock/<int:id>', methods=['DELETE'])
+@api_error_handler
+def delete_stock(id):
+    try:
+        equipement = EquipementStock.query.get_or_404(id)
+        db.session.delete(equipement)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/stock/<int:id>', methods=['GET'])
+@api_error_handler
 def get_equipement(id):
     equipement = EquipementStock.query.get_or_404(id)
     return jsonify({
@@ -175,6 +209,7 @@ def get_equipement(id):
     })
 
 @app.route('/api/stock/alertes', methods=['GET'])
+@api_error_handler
 def get_alertes_stock():
     alertes = EquipementStock.query.filter(
         EquipementStock.quantite <= EquipementStock.seuil_alerte
@@ -190,6 +225,62 @@ def get_alertes_stock():
 
 with app.app_context():
     db.create_all()
+    
+    # Charger des données de démonstration si nous sommes sur Vercel
+    if os.environ.get('VERCEL_REGION') and EquipementStock.query.count() == 0:
+        try:
+            # Ajouter quelques demandes d'enlèvement de démonstration
+            demo_enlevement1 = DemandeEnlevement(
+                date=datetime.now(),
+                entreprise="Société Démo",
+                contact="Jean Demo",
+                email="contact@demo.fr",
+                telephone="0123456789",
+                description="Lot de 10 ordinateurs portables",
+                statut="Planifié"
+            )
+            
+            demo_enlevement2 = DemandeEnlevement(
+                date=datetime.now(),
+                entreprise="Entreprise Test",
+                contact="Marie Test",
+                email="info@test.fr",
+                telephone="0987654321",
+                description="5 écrans et 2 serveurs",
+                statut="En cours"
+            )
+            
+            # Ajouter des équipements de stock de démonstration
+            demo_equipement1 = EquipementStock(
+                type="Ordinateur",
+                marque="Dell",
+                modele="Latitude 7420",
+                etat="bon",
+                quantite=5,
+                seuil_alerte=2,
+                description="Ordinateurs portables reconditionnés"
+            )
+            
+            demo_equipement2 = EquipementStock(
+                type="Écran",
+                marque="HP",
+                modele="E24 G4",
+                etat="neuf",
+                quantite=3,
+                seuil_alerte=1,
+                description="Écrans 24 pouces"
+            )
+            
+            db.session.add(demo_enlevement1)
+            db.session.add(demo_enlevement2)
+            db.session.add(demo_equipement1)
+            db.session.add(demo_equipement2)
+            db.session.commit()
+            
+            print("Données de démonstration ajoutées avec succès")
+        except Exception as e:
+            print(f"Erreur lors de l'ajout des données de démonstration: {str(e)}")
+            db.session.rollback()
 
 if __name__ == '__main__':
     app.run(debug=True)
