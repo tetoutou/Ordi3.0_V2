@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" fill-rule="evenodd">
+        <text x="45" y="25" font-family="Arial" font-size="18" font-weight="bold" fill="#16a34a">
+            Ordi 3.0
+        </text>
+        <path d="M15,10 h20 v20 h-20 z" stroke="#16a34a" stroke-width="2" fill="none"/>
+        <path d="M20,15 h10 M20,20 h10 M20,25 h10" stroke="#16a34a" stroke-width="2"/>
+        <circle cx="35" cy="30" r="3" fill="#16a34a"/>
+    </g>
+</svg>

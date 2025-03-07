@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordi 3.0 - Gestion Éco-Responsable du Matériel Informatique</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-50">
+    <div id="app" v-cloak>
+        <!-- Notifications -->
+        <div class="fixed top-4 right-4 z-50 space-y-2">
+            <transition-group name="notification">
+                <div v-for="notification in notifications" :key="notification.id"
+                    :class="{
+                        'p-4 rounded-lg shadow-lg max-w-md transform transition-all duration-300': true,
+                        'bg-green-100 text-green-800 border-l-4 border-green-500': notification.type === 'success',
+                        'bg-red-100 text-red-800 border-l-4 border-red-500': notification.type === 'error',
+                        'bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500': notification.type === 'warning'
+                    }">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i :class="{
+                                'fas mr-2': true,
+                                'fa-check-circle': notification.type === 'success',
+                                'fa-exclamation-circle': notification.type === 'error',
+                                'fa-exclamation-triangle': notification.type === 'warning'
+                            }"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">[[ notification.message ]]</p>
+                        </div>
+                    </div>
+                </div>
+            </transition-group>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div v-if="loading.submit || loading.enlevements || loading.stock || loading.delete" 
+            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-4 border-green-600 border-t-transparent mx-auto mb-4"></div>
+                <p class="text-gray-700">Chargement en cours...</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Ordi 3.0" class="h-8">
+                    </div>
+                    <div class="hidden md:flex space-x-8">
+                        <a @click="changeModule('enlevement')" :class="{'text-green-500': currentModule === 'enlevement'}" class="text-gray-300 hover:text-green-500 cursor-pointer">Enlèvement</a>
+                        <a @click="changeModule('stock')" :class="{'text-green-500': currentModule === 'stock'}" class="text-gray-300 hover:text-green-500 cursor-pointer">Stock</a>
+                        <a @click="changeModule('reconditionnement')" :class="{'text-green-500': currentModule === 'reconditionnement'}" class="text-gray-300 hover:text-green-500 cursor-pointer">Reconditionnement</a>
+                        <a @click="changeModule('vente')" :class="{'text-green-500': currentModule === 'vente'}" class="text-gray-300 hover:text-green-500 cursor-pointer">Vente</a>
+                    </div>
+                    <div class="flex items-center">
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            Connexion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="bg-gray-900 text-white py-20">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center">
+                    <h1 class="text-5xl font-bold mb-6">Gestion Éco-Responsable du<br>Cycle de Vie de votre matériel<br>informatique</h1>
+                    <p class="text-xl text-gray-300 mb-8">Une solution complète pour les entreprises souhaitant optimiser la<br>réutilisation et la valeur de leur matériel informatique usagé.</p>
+                    <div class="flex justify-center space-x-4">
+                        <button @click="changeModule('enlevement')" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+                            Planifier un enlèvement
+                        </button>
+                        <button class="border border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-gray-900">
+                            Découvrir nos services
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notre Approche -->
+        <div class="bg-white py-16">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-4">Notre Approche</h2>
+                    <p class="text-gray-600 mb-12">Une solution intégrée pour chaque étape du cycle de vie de votre matériel informatique.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <div class="p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                            <div class="text-green-600 mb-4">
+                                <i class="fas fa-truck-loading text-4xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Enlèvement</h3>
+                            <p class="text-gray-600">Collecte professionnelle de votre matériel informatique usagé</p>
+                        </div>
+                        <div class="p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                            <div class="text-green-600 mb-4">
+                                <i class="fas fa-boxes text-4xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Stock</h3>
+                            <p class="text-gray-600">Gestion optimisée de l'inventaire et traçabilité complète</p>
+                        </div>
+                        <div class="p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                            <div class="text-green-600 mb-4">
+                                <i class="fas fa-tools text-4xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Reconditionnement</h3>
+                            <p class="text-gray-600">Remise en état et mise à niveau professionnelle</p>
+                        </div>
+                        <div class="p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                            <div class="text-green-600 mb-4">
+                                <i class="fas fa-store text-4xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Vente</h3>
+                            <p class="text-gray-600">Distribution et commercialisation responsable</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Enlèvement -->
+        <div v-if="currentModule === 'enlevement'" class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-3xl font-bold mb-8 text-center">Gestion des Enlèvements</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Formulaire de demande -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold mb-4">Nouvelle demande</h3>
+                            <p class="text-gray-600 mb-6">Planifiez un enlèvement de matériel informatique en quelques clics.</p>
+                            <button @click="showModalNouvelEnlevement = true" class="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 flex items-center justify-center">
+                                <i class="fas fa-plus mr-2"></i>
+                                Planifier l'enlèvement
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Liste des demandes -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="p-6 border-b border-gray-200">
+                                <h3 class="text-xl font-semibold">Demandes en cours</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entreprise</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr v-for="demande in enlevements" :key="demande.id">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">[[ demande.date ]]</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">[[ demande.entreprise ]]</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <div>[[ demande.contact ]]</div>
+                                                <div class="text-gray-500">[[ demande.telephone ]]</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span :class="{
+                                                    'px-2 py-1 text-xs rounded-full': true,
+                                                    'bg-yellow-100 text-yellow-800': demande.statut === 'Planifié',
+                                                    'bg-green-100 text-green-800': demande.statut === 'Terminé'
+                                                }">[[ demande.statut ]]</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <button v-if="demande.statut !== 'Terminé'"
+                                                    @click="marquerTermine(demande)"
+                                                    class="text-green-600 hover:text-green-900">
+                                                    <i class="fas fa-check mr-1"></i>
+                                                    Terminer
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr v-if="enlevements.length === 0">
+                                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                                Aucune demande d'enlèvement en cours
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Nouvel Enlèvement -->
+            <div v-if="showModalNouvelEnlevement" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Planifier un enlèvement</h3>
+                        <button @click="showModalNouvelEnlevement = false" class="text-gray-600 hover:text-gray-800">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form @submit.prevent="submitEnlevement" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nom de l'entreprise</label>
+                            <input type="text" v-model="nouvelEnlevement.entreprise" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nom du contact</label>
+                            <input type="text" v-model="nouvelEnlevement.contact" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" v-model="nouvelEnlevement.email" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+                            <input type="tel" v-model="nouvelEnlevement.telephone" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date souhaitée</label>
+                            <input type="date" v-model="nouvelEnlevement.date" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description du matériel</label>
+                            <textarea v-model="nouvelEnlevement.description" required rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                        </div>
+                        <div class="flex justify-end space-x-3 mt-6">
+                            <button type="button" @click="showModalNouvelEnlevement = false"
+                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                Annuler
+                            </button>
+                            <button type="submit"
+                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                                Envoyer la demande
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Stock -->
+        <div v-if="currentModule === 'stock'" class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Formulaire d'ajout -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold mb-6">Ajouter un équipement</h2>
+                        <form @submit.prevent="submitEquipement" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Type d'équipement</label>
+                                <select v-model="nouvelEquipement.type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                    <option value="Ordinateur">Ordinateur</option>
+                                    <option value="Écran">Écran</option>
+                                    <option value="Imprimante">Imprimante</option>
+                                    <option value="Serveur">Serveur</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Marque</label>
+                                <input type="text" v-model="nouvelEquipement.marque" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Modèle</label>
+                                <input type="text" v-model="nouvelEquipement.modele" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">État</label>
+                                <select v-model="nouvelEquipement.etat" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                    <option value="neuf">Neuf</option>
+                                    <option value="bon">Bon état</option>
+                                    <option value="moyen">État moyen</option>
+                                    <option value="a_reconditionner">À reconditionner</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Quantité</label>
+                                <input type="number" v-model="nouvelEquipement.quantite" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Zone</label>
+                                    <input type="text" v-model="nouvelEquipement.emplacement.zone" placeholder="ex: A, B, C" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Étagère</label>
+                                    <input type="text" v-model="nouvelEquipement.emplacement.etagere" placeholder="ex: 1, 2, 3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Seuil d'alerte</label>
+                                <input type="number" v-model="nouvelEquipement.seuil_alerte" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea v-model="nouvelEquipement.description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                                Ajouter au stock
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Inventaire et Alertes -->
+                    <div class="lg:col-span-2">
+                        <!-- Alertes de stock -->
+                        <div v-if="alertesStock.length > 0" class="mb-8">
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-yellow-800">
+                                            Alertes de stock bas
+                                        </h3>
+                                        <div class="mt-2 text-sm text-yellow-700">
+                                            <ul class="list-disc pl-5 space-y-1">
+                                                <li v-for="alerte in alertesStock" :key="alerte.id">
+                                                    [[ alerte.marque ]] [[ alerte.modele ]] - Quantité: [[ alerte.quantite ]] (Seuil: [[ alerte.seuil_alerte ]])
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tableau d'inventaire -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-2xl font-bold">Inventaire du stock</h2>
+                                <div class="flex space-x-2">
+                                    <button @click="refreshStock" class="p-2 text-gray-600 hover:text-green-600">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <div class="relative">
+                                        <input type="text" v-model="searchStock" placeholder="Rechercher..." 
+                                            class="pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Équipement</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">État</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantité</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Emplacement</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr v-for="equipement in equipementsFiltres" :key="equipement.id">
+                                            <td class="px-6 py-4">
+                                                <div class="font-medium text-gray-900">[[ equipement.marque ]] [[ equipement.modele ]]</div>
+                                                <div class="text-sm text-gray-500">[[ equipement.type ]]</div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span :class="{
+                                                    'px-2 py-1 text-xs rounded-full': true,
+                                                    'bg-blue-100 text-blue-800': equipement.etat === 'bon',
+                                                    'bg-yellow-100 text-yellow-800': equipement.etat === 'moyen',
+                                                    'bg-red-100 text-red-800': equipement.etat === 'a_reconditionner'
+                                                }">[[ equipement.etat ]]</span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center">
+                                                    <span class="text-lg font-semibold">[[ equipement.quantite ]]</span>
+                                                    <span class="ml-2 text-sm text-gray-500">unités</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Zone [[ equipement.emplacement.zone ]] - Étagère [[ equipement.emplacement.etagere ]]
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <button @click="editEquipementItem(equipement)" class="text-blue-600 hover:text-blue-800 mr-2">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button @click="deleteEquipement(equipement.id)" class="text-red-600 hover:text-red-800">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Edit Equipement -->
+            <div v-if="showModalEditEquipement" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Éditer l'équipement</h3>
+                        <button @click="showModalEditEquipement = false" class="text-gray-600 hover:text-gray-800">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form @submit.prevent="updateEquipement" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Type d'équipement</label>
+                            <select v-model="editingEquipement.type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                <option value="Ordinateur">Ordinateur</option>
+                                <option value="Écran">Écran</option>
+                                <option value="Imprimante">Imprimante</option>
+                                <option value="Serveur">Serveur</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Marque</label>
+                            <input type="text" v-model="editingEquipement.marque" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Modèle</label>
+                            <input type="text" v-model="editingEquipement.modele" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">État</label>
+                            <select v-model="editingEquipement.etat" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                <option value="neuf">Neuf</option>
+                                <option value="bon">Bon état</option>
+                                <option value="moyen">État moyen</option>
+                                <option value="a_reconditionner">À reconditionner</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Quantité</label>
+                            <input type="number" v-model="editingEquipement.quantite" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Zone</label>
+                                <input type="text" v-model="editingEquipement.emplacement.zone" placeholder="ex: A, B, C" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Étagère</label>
+                                <input type="text" v-model="editingEquipement.emplacement.etagere" placeholder="ex: 1, 2, 3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Seuil d'alerte</label>
+                            <input type="number" v-model="editingEquipement.seuil_alerte" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea v-model="editingEquipement.description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"></textarea>
+                        </div>
+                        <div class="flex justify-end space-x-3 mt-6">
+                            <button type="button" @click="showModalEditEquipement = false"
+                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                Annuler
+                            </button>
+                            <button type="submit"
+                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                                Mettre à jour l'équipement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        <!-- Autres modules (à implémenter) -->
+        <div v-if="currentModule === 'reconditionnement'" class="max-w-7xl mx-auto px-4 py-8">
+            <h2 class="text-2xl font-bold mb-6">Module de Reconditionnement</h2>
+            <p class="text-gray-600">Ce module est en cours de développement.</p>
+        </div>
+
+        <div v-if="currentModule === 'vente'" class="max-w-7xl mx-auto px-4 py-8">
+            <h2 class="text-2xl font-bold mb-6">Module de Vente</h2>
+            <p class="text-gray-600">Ce module est en cours de développement.</p>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">À propos</h4>
+                        <p class="text-gray-400">Ordi 3.0 s'engage dans une démarche éco-responsable pour la gestion du cycle de vie du matériel informatique.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Services</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" class="hover:text-green-500">Enlèvement</a></li>
+                            <li><a href="#" class="hover:text-green-500">Stock</a></li>
+                            <li><a href="#" class="hover:text-green-500">Reconditionnement</a></li>
+                            <li><a href="#" class="hover:text-green-500">Vente</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><i class="fas fa-phone mr-2"></i> 01 23 45 67 89</li>
+                            <li><i class="fas fa-envelope mr-2"></i> contact@ordi3-0.fr</li>
+                            <li><i class="fas fa-map-marker-alt mr-2"></i> 123 rue de l'Innovation</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Suivez-nous</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-400 hover:text-green-500">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-green-500">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-green-500">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
+                    <p>&copy; 2024 Ordi 3.0. Tous droits réservés.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    currentModule: 'enlevement',
+                    showModalNouvelEnlevement: false,
+                    showModalEditEquipement: false,
+                    loading: {
+                        submit: false,
+                        enlevements: false,
+                        stock: false,
+                        delete: false
+                    },
+                    notifications: [],
+                    nouvelEnlevement: {
+                        date: '',
+                        entreprise: '',
+                        contact: '',
+                        email: '',
+                        telephone: '',
+                        description: ''
+                    },
+                    enlevements: [],
+                    nouvelEquipement: {
+                        type: 'Ordinateur',
+                        marque: '',
+                        modele: '',
+                        etat: 'neuf',
+                        quantite: 1,
+                        emplacement: {
+                            zone: '',
+                            etagere: ''
+                        },
+                        seuil_alerte: 5,
+                        description: ''
+                    },
+                    editingEquipement: null,
+                    stock: [],
+                    searchStock: '',
+                    alertesStock: []
+                }
+            },
+            computed: {
+                equipementsFiltres() {
+                    if (!this.searchStock) {
+                        return this.stock;
+                    }
+                    
+                    const searchLower = this.searchStock.toLowerCase();
+                    return this.stock.filter(item => {
+                        return item.marque.toLowerCase().includes(searchLower) ||
+                               item.modele.toLowerCase().includes(searchLower) ||
+                               item.type.toLowerCase().includes(searchLower) ||
+                               item.etat.toLowerCase().includes(searchLower);
+                    });
+                }
+            },
+            methods: {
+                showNotification(message, type = 'success') {
+                    const id = Date.now()
+                    this.notifications.push({ id, message, type })
+                    setTimeout(() => {
+                        this.notifications = this.notifications.filter(n => n.id !== id)
+                    }, 5000)
+                },
+                changeModule(module) {
+                    this.currentModule = module
+                },
+                async submitEnlevement() {
+                    if (!this.nouvelEnlevement.date || !this.nouvelEnlevement.entreprise || 
+                        !this.nouvelEnlevement.contact || !this.nouvelEnlevement.email || 
+                        !this.nouvelEnlevement.telephone || !this.nouvelEnlevement.description) {
+                        this.showNotification('Veuillez remplir tous les champs', 'error')
+                        return
+                    }
+
+                    this.loading.submit = true
+                    try {
+                        const response = await fetch('/api/enlevements', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.nouvelEnlevement)
+                        })
+
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la création de la demande')
+                        }
+
+                        this.showNotification('Demande d\'enlèvement créée avec succès')
+                        this.showModalNouvelEnlevement = false
+                        this.nouvelEnlevement = {
+                            date: '',
+                            entreprise: '',
+                            contact: '',
+                            email: '',
+                            telephone: '',
+                            description: ''
+                        }
+                        await this.refreshEnlevements()
+                    } catch (error) {
+                        this.showNotification(error.message, 'error')
+                    } finally {
+                        this.loading.submit = false
+                    }
+                },
+                async refreshEnlevements() {
+                    this.loading.enlevements = true
+                    try {
+                        const response = await fetch('/api/enlevements')
+                        const data = await response.json()
+                        this.enlevements = data
+                    } catch (error) {
+                        console.error('Erreur:', error)
+                        this.showNotification('Erreur lors du chargement des demandes', 'error')
+                    } finally {
+                        this.loading.enlevements = false
+                    }
+                },
+                async submitEquipement() {
+                    if (!this.nouvelEquipement.marque || !this.nouvelEquipement.modele || 
+                        !this.nouvelEquipement.quantite || this.nouvelEquipement.quantite < 1) {
+                        this.showNotification('Veuillez remplir tous les champs', 'error')
+                        return
+                    }
+
+                    this.loading.submit = true
+                    try {
+                        const response = await fetch('/api/stock', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.nouvelEquipement)
+                        })
+
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de l\'ajout de l\'équipement')
+                        }
+
+                        this.showNotification('Équipement ajouté avec succès')
+                        this.nouvelEquipement = {
+                            type: 'Ordinateur',
+                            marque: '',
+                            modele: '',
+                            etat: 'neuf',
+                            quantite: 1,
+                            emplacement: {
+                                zone: '',
+                                etagere: ''
+                            },
+                            seuil_alerte: 5,
+                            description: ''
+                        }
+                        await this.refreshStock()
+                    } catch (error) {
+                        this.showNotification(error.message, 'error')
+                    } finally {
+                        this.loading.submit = false
+                    }
+                },
+                async refreshStock() {
+                    this.loading.stock = true
+                    try {
+                        const [stockResponse, alertesResponse] = await Promise.all([
+                            fetch('/api/stock'),
+                            fetch('/api/stock/alertes')
+                        ]);
+                        this.stock = await stockResponse.json();
+                        this.alertesStock = await alertesResponse.json();
+                    } catch (error) {
+                        console.error('Erreur:', error)
+                        this.showNotification('Erreur lors du chargement du stock', 'error')
+                    } finally {
+                        this.loading.stock = false
+                    }
+                },
+                async marquerTermine(demande) {
+                    if (!confirm('Voulez-vous marquer cette demande comme terminée ?')) return
+
+                    try {
+                        const response = await fetch(`/api/enlevements/${demande.id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                statut: 'Terminé',
+                                date_realisation: new Date().toISOString()
+                            })
+                        })
+
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la mise à jour du statut')
+                        }
+
+                        this.showNotification('Demande marquée comme terminée')
+                        await this.refreshEnlevements()
+                    } catch (error) {
+                        this.showNotification(error.message, 'error')
+                    }
+                },
+                async deleteEquipement(id) {
+                    if (!confirm('Êtes-vous sûr de vouloir supprimer cet équipement?')) {
+                        return;
+                    }
+                    
+                    this.loading.delete = true;
+                    try {
+                        const response = await fetch(`/api/stock/${id}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la suppression de l\'équipement');
+                        }
+                        
+                        this.showNotification('Équipement supprimé avec succès');
+                        await this.refreshStock();
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        this.showNotification(error.message, 'error');
+                    } finally {
+                        this.loading.delete = false;
+                    }
+                },
+                
+                editEquipementItem(equipement) {
+                    this.editingEquipement = JSON.parse(JSON.stringify(equipement)); // Create a deep copy
+                    this.showModalEditEquipement = true;
+                },
+                
+                async updateEquipement() {
+                    if (!this.editingEquipement.marque || !this.editingEquipement.modele || 
+                        !this.editingEquipement.quantite || this.editingEquipement.quantite < 1) {
+                        this.showNotification('Veuillez remplir tous les champs', 'error');
+                        return;
+                    }
+                    
+                    this.loading.submit = true;
+                    try {
+                        const response = await fetch(`/api/stock/${this.editingEquipement.id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.editingEquipement)
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la mise à jour de l\'équipement');
+                        }
+                        
+                        this.showNotification('Équipement mis à jour avec succès');
+                        this.showModalEditEquipement = false;
+                        this.editingEquipement = null;
+                        await this.refreshStock();
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        this.showNotification(error.message, 'error');
+                    } finally {
+                        this.loading.submit = false;
+                    }
+                }
+            },
+            mounted() {
+                this.refreshEnlevements()
+                
+                // Add a watcher for currentModule to load data when switching modules
+                this.$watch('currentModule', (newModule) => {
+                    if (newModule === 'enlevement') {
+                        this.refreshEnlevements();
+                    } else if (newModule === 'stock') {
+                        this.refreshStock();
+                    }
+                });
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

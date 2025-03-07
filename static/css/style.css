@@ -1,0 +1,28 @@
+[v-cloak] {
+    display: none;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+/* Custom styles for status badges */
+.status-badge {
+    @apply px-2 py-1 text-xs rounded-full;
+}
+
+/* Custom form styles */
+input:focus, textarea:focus {
+    @apply ring-2 ring-green-500 outline-none;
+}
+
+/* Custom button hover effects */
+.btn-hover {
+    @apply transition-colors duration-200;
+}
