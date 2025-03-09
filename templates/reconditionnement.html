@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordi 3.0 - Reconditionnement</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-50">
+    <div id="app" v-cloak>
+        {% include 'header.html' %}
+
+        <!-- Hero Section -->
+        <div class="bg-gray-900 text-white py-20">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center">
+                    <h1 class="text-5xl font-bold mb-6">Reconditionnement</h1>
+                    <p class="text-xl text-gray-300 mb-8">Gérez le processus de reconditionnement du matériel informatique</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Protocole de Reconditionnement -->
+        <div class="py-8 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-6">Protocole de Reconditionnement</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Étape 1 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-100 rounded-full p-2 mr-3">
+                                    <i class="fas fa-clipboard-check text-green-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">1. Réception et Identification</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Vérification de l'état physique général</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Attribution d'un numéro d'identification unique</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Enregistrement des informations principales (type, marque, modèle, etc.)</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Étape 2 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-100 rounded-full p-2 mr-3">
+                                    <i class="fas fa-tools text-green-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">2. Diagnostic Technique</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Test des composants (alimentation, carte mère, RAM, etc.)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Identification des pannes</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Vérification des licences et compatibilité OS</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Étape 3 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-100 rounded-full p-2 mr-3">
+                                    <i class="fas fa-broom text-green-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">3. Nettoyage et Remise en État</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Nettoyage extérieur et intérieur</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Remplacement des pièces défectueuses</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Application de la pâte thermique si nécessaire</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Étape 4 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-100 rounded-full p-2 mr-3">
+                                    <i class="fas fa-sync text-green-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">4. Mise à Jour et Tests</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Formatage et installation du système</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Installation des logiciels essentiels</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Tests de fonctionnement complets</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Étape 5 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-100 rounded-full p-2 mr-3">
+                                    <i class="fas fa-tag text-green-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">5. Attribution du Statut</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <span>Reconditionné - Prêt à l'emploi ✅</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-clock text-yellow-500 mt-1 mr-2"></i>
+                                    <span>En attente de réparation ⏳</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-recycle text-red-500 mt-1 mr-2"></i>
+                                    <span>Non réparable - À recycler ♻️</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Étape 6 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-100 rounded-full p-2 mr-3">
+                                    <i class="fas fa-box text-green-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">6. Stockage et Dispatching</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Affectation à un département</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Étiquetage et mise en stock</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Préparation pour distribution</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu Principal -->
+        <div class="py-8">
+            <div class="max-w-7xl mx-auto px-4">
+                <!-- En-tête avec bouton d'ajout -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold">Équipements à reconditionner</h2>
+                    <button @click="showModalAjout = true" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                        <i class="fas fa-plus mr-2"></i>Ajouter du matériel
+                    </button>
+                </div>
+
+                <!-- Tableau des équipements à reconditionner -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <div class="relative">
+                                <input type="text" v-model="searchReconditionnement" placeholder="Rechercher..." 
+                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                            </div>
+                            <button @click="refreshReconditionnement" class="p-2 text-gray-600 hover:text-green-600">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marque/Modèle</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">État</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Département</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'arrivée</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr v-for="item in equipementsFiltres" :key="item.id">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">[[ item.type ]]</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">[[ item.marque ]]</div>
+                                        <div class="text-sm text-gray-500">[[ item.modele ]]</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span :class="{
+                                            'px-2 py-1 text-xs rounded-full': true,
+                                            'bg-red-100 text-red-800': item.etat_initial === 'defectueux',
+                                            'bg-yellow-100 text-yellow-800': item.etat_initial === 'a_verifier',
+                                            'bg-green-100 text-green-800': item.etat_initial === 'fonctionnel',
+                                            'bg-orange-100 text-orange-800': item.etat_initial === 'incomplet'
+                                        }">[[ getEtatLabel(item.etat_initial) ]]</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">[[ getDepartementNom(item.departement) ]]</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">[[ formatDate(item.date_arrivee) ]]</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex flex-col space-y-2">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-gray-600">[[ getStatutLabel(item.statut) ]]</span>
+                                                <span class="text-gray-600">[[ getProgressPercentage(item) ]]%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                                <div class="h-2.5 rounded-full transition-all duration-500"
+                                                    :class="{
+                                                        'bg-gray-400': item.statut === 'en_attente',
+                                                        'bg-yellow-400': item.statut === 'diagnostic',
+                                                        'bg-blue-400': item.statut === 'nettoyage',
+                                                        'bg-orange-400': item.statut === 'reparation',
+                                                        'bg-purple-400': item.statut === 'tests',
+                                                        'bg-indigo-400': item.statut === 'logiciels',
+                                                        'bg-green-400': item.statut === 'termine',
+                                                        'bg-red-400': item.statut === 'non_reparable'
+                                                    }"
+                                                    :style="{ width: getProgressPercentage(item) + '%' }">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button @click="demarrerReconditionnement(item)" v-if="item.statut === 'en_attente'"
+                                            class="text-green-600 hover:text-green-900 mr-3">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button @click="terminerReconditionnement(item)" v-if="item.statut === 'en_cours'"
+                                            class="text-green-600 hover:text-green-900 mr-3">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button @click="showDetails(item)" class="text-gray-600 hover:text-gray-900 mr-3">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button @click="showNotes(item)" class="text-gray-600 hover:text-gray-900">
+                                            <i class="fas fa-info-circle"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Détails -->
+        <div v-if="showModalDetails" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Protocole de Reconditionnement</h3>
+                    <button @click="showModalDetails = false" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div v-if="selectedEquipement" class="space-y-6">
+                    <!-- Étape 1: Réception et Identification -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="text-lg font-medium mb-4 flex items-center">
+                            <div class="bg-green-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-clipboard-check text-green-600"></i>
+                            </div>
+                            1. Réception et Identification
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Type d'équipement</label>
+                                <input type="text" v-model="selectedEquipement.type" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Numéro de série</label>
+                                <input type="text" v-model="selectedEquipement.numero_serie" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Marque</label>
+                                <input type="text" v-model="selectedEquipement.marque" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Modèle</label>
+                                <input type="text" v-model="selectedEquipement.modele" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Technicien réception</label>
+                                <input type="text" v-model="selectedEquipement.technicien_reception"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium text-gray-700">Notes de réception</label>
+                                <textarea v-model="selectedEquipement.notes_reception" rows="3"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                    placeholder="Notes sur la réception de l'équipement..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 2: Diagnostic Technique -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="text-lg font-medium mb-4 flex items-center">
+                            <div class="bg-green-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-tools text-green-600"></i>
+                            </div>
+                            2. Diagnostic Technique
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" 
+                                       :checked="!!selectedEquipement.diagnostic_date"
+                                       @change="selectedEquipement.diagnostic_date = $event.target.checked ? new Date().toISOString().split('T')[0] : null; updateEtape(selectedEquipement, 'diagnostic')"
+                                       :disabled="selectedEquipement.statut === 'termine' || selectedEquipement.statut === 'non_reparable'"
+                                       class="form-checkbox h-4 w-4 text-yellow-500 rounded">
+                                <span class="ml-2 text-sm font-medium text-gray-700">Diagnostic effectué</span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Diagnostic initial</label>
+                                <textarea v-model="selectedEquipement.diagnostic_initial" rows="3"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                    placeholder="Détails du diagnostic initial..."></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">État initial</label>
+                                    <select v-model="selectedEquipement.etat_initial" required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                        <option value="a_verifier">À vérifier</option>
+                                        <option value="fonctionnel">Fonctionnel</option>
+                                        <option value="defectueux">Défectueux</option>
+                                        <option value="incomplet">Incomplet</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Date du diagnostic</label>
+                                    <input type="date" v-model="selectedEquipement.diagnostic_date"
+                                        @change="updateEtape(selectedEquipement, 'diagnostic')"
+                                        :disabled="selectedEquipement.statut === 'termine' || selectedEquipement.statut === 'non_reparable'"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Technicien diagnostic</label>
+                                <input type="text" v-model="selectedEquipement.technicien_diagnostic"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Notes du diagnostic</label>
+                                <textarea v-model="selectedEquipement.notes_diagnostic" rows="3"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                    placeholder="Notes détaillées sur le diagnostic..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 3: Nettoyage et Remise en État -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="text-lg font-medium mb-4 flex items-center">
+                            <div class="bg-green-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-broom text-green-600"></i>
+                            </div>
+                            3. Nettoyage et Remise en État
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" 
+                                       v-model="selectedEquipement.nettoyage_effectue" 
+                                       @change="updateEtape(selectedEquipement, 'nettoyage')"
+                                       :disabled="!selectedEquipement.diagnostic_date || selectedEquipement.statut === 'termine' || selectedEquipement.statut === 'non_reparable'"
+                                       class="form-checkbox h-4 w-4 text-blue-500 rounded">
+                                <span class="ml-2 text-sm font-medium text-gray-700">Nettoyage effectué</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" 
+                                       v-model="selectedEquipement.composants_remplaces" 
+                                       @change="updateEtape(selectedEquipement, 'reparation')"
+                                       :disabled="!selectedEquipement.nettoyage_effectue || selectedEquipement.statut === 'termine' || selectedEquipement.statut === 'non_reparable'"
+                                       class="form-checkbox h-4 w-4 text-orange-500 rounded">
+                                <span class="ml-2 text-sm font-medium text-gray-700">Réparations effectuées</span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Date du nettoyage</label>
+                                <input type="date" v-model="selectedEquipement.nettoyage_date"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Technicien nettoyage</label>
+                                <input type="text" v-model="selectedEquipement.technicien_nettoyage"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Notes de nettoyage et réparation</label>
+                                <textarea v-model="selectedEquipement.notes_nettoyage" rows="3"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                    placeholder="Notes sur le nettoyage et les réparations effectuées..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 4: Mise à Jour et Tests -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="text-lg font-medium mb-4 flex items-center">
+                            <div class="bg-green-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-sync text-green-600"></i>
+                            </div>
+                            4. Mise à Jour et Tests
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" 
+                                       v-model="selectedEquipement.tests_effectues" 
+                                       @change="updateEtape(selectedEquipement, 'tests')"
+                                       :disabled="!selectedEquipement.composants_remplaces || selectedEquipement.statut === 'termine' || selectedEquipement.statut === 'non_reparable'"
+                                       class="form-checkbox h-4 w-4 text-purple-500 rounded">
+                                <span class="ml-2 text-sm font-medium text-gray-700">Tests effectués</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" 
+                                       v-model="selectedEquipement.logiciels_installes" 
+                                       @change="updateEtape(selectedEquipement, 'logiciels')"
+                                       :disabled="!selectedEquipement.tests_effectues || selectedEquipement.statut === 'termine' || selectedEquipement.statut === 'non_reparable'"
+                                       class="form-checkbox h-4 w-4 text-indigo-500 rounded">
+                                <span class="ml-2 text-sm font-medium text-gray-700">Logiciels installés</span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Technicien tests</label>
+                                <input type="text" v-model="selectedEquipement.technicien_tests"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Notes des tests et mises à jour</label>
+                                <textarea v-model="selectedEquipement.notes_tests" rows="3"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                    placeholder="Notes sur les tests effectués et les logiciels installés..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 5: Attribution du Statut -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="text-lg font-medium mb-4 flex items-center">
+                            <div class="bg-green-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-tag text-green-600"></i>
+                            </div>
+                            5. Attribution du Statut
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Statut</label>
+                                <select v-model="selectedEquipement.statut" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                    <option value="en_attente">En attente</option>
+                                    <option value="en_cours">En cours</option>
+                                    <option value="termine">Terminé</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Technicien</label>
+                                <input type="text" v-model="selectedEquipement.technicien"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Évaluation qualité (1-5)</label>
+                                <input type="number" v-model="selectedEquipement.evaluation_qualite" min="1" max="5"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Succès de la réparation</label>
+                                <select v-model="selectedEquipement.succes_reparation"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                    <option :value="true">Oui</option>
+                                    <option :value="false">Non</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 6: Stockage et Dispatching -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="text-lg font-medium mb-4 flex items-center">
+                            <div class="bg-green-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-box text-green-600"></i>
+                            </div>
+                            6. Stockage et Dispatching
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Localisation</label>
+                                <input type="text" v-model="selectedEquipement.localisation"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                    placeholder="Emplacement de stockage...">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Département</label>
+                                <select v-model="selectedEquipement.departement" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                    <option value="21">Côte-d'Or (21)</option>
+                                    <option value="25">Doubs (25)</option>
+                                    <option value="39">Jura (39)</option>
+                                    <option value="58">Nièvre (58)</option>
+                                    <option value="70">Haute-Saône (70)</option>
+                                    <option value="71">Saône-et-Loire (71)</option>
+                                    <option value="89">Yonne (89)</option>
+                                    <option value="90">Territoire de Belfort (90)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button @click="showModalDetails = false" 
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button @click="saveDetails" 
+                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Ajout Matériel -->
+        <div v-if="showModalAjout" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-full max-w-xl shadow-lg rounded-md bg-white">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Ajouter du matériel à reconditionner</h3>
+                    <button @click="showModalAjout = false" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form @submit.prevent="ajouterMateriel" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Type d'équipement</label>
+                            <select v-model="nouveauMateriel.type" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                <option value="Ordinateur fixe">Ordinateur fixe</option>
+                                <option value="Ordinateur portable">Ordinateur portable</option>
+                                <option value="Écran">Écran</option>
+                                <option value="Imprimante">Imprimante</option>
+                                <option value="Scanner">Scanner</option>
+                                <option value="Serveur">Serveur</option>
+                                <option value="Tablette">Tablette</option>
+                                <option value="Smartphone">Smartphone</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Date d'arrivée</label>
+                            <input type="date" v-model="nouveauMateriel.date_arrivee" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Heure d'arrivée</label>
+                            <input type="time" v-model="nouveauMateriel.heure_arrivee" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Numéro de série</label>
+                            <input type="text" v-model="nouveauMateriel.numero_serie" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Marque</label>
+                            <input type="text" v-model="nouveauMateriel.marque" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Modèle</label>
+                            <input type="text" v-model="nouveauMateriel.modele" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">État initial</label>
+                            <select v-model="nouveauMateriel.etat_initial" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                <option value="a_verifier">À vérifier</option>
+                                <option value="fonctionnel">Fonctionnel</option>
+                                <option value="defectueux">Défectueux</option>
+                                <option value="incomplet">Incomplet</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Département</label>
+                        <select v-model="nouveauMateriel.departement" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            <option value="21">Côte-d'Or (21)</option>
+                            <option value="25">Doubs (25)</option>
+                            <option value="39">Jura (39)</option>
+                            <option value="58">Nièvre (58)</option>
+                            <option value="70">Haute-Saône (70)</option>
+                            <option value="71">Saône-et-Loire (71)</option>
+                            <option value="89">Yonne (89)</option>
+                            <option value="90">Territoire de Belfort (90)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Provenance</label>
+                        <input type="text" v-model="nouveauMateriel.provenance"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                    </div>
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" @click="showModalAjout = false"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                            Ajouter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Notes -->
+        <div v-if="showModalNotes" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-full max-w-xl shadow-lg rounded-md bg-white">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Notes techniques</h3>
+                    <button @click="showModalNotes = false" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div v-if="selectedEquipement" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Notes techniques</label>
+                        <textarea v-model="selectedEquipement.notes" rows="6" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                            placeholder="Ajoutez des notes techniques..."></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button @click="showModalNotes = false" 
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button @click="saveNotes" 
+                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                            Enregistrer les notes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    equipements: [],
+                    searchReconditionnement: '',
+                    showModalDetails: false,
+                    showModalAjout: false,
+                    showModalNotes: false,
+                    selectedEquipement: null,
+                    nouveauMateriel: {
+                        type: 'Ordinateur fixe',
+                        numero_serie: '',
+                        marque: '',
+                        modele: '',
+                        etat_initial: 'a_verifier',
+                        departement: '',
+                        provenance: '',
+                        date_arrivee: new Date().toISOString().split('T')[0],
+                        heure_arrivee: new Date().toTimeString().slice(0,5)
+                    },
+                    loading: {
+                        save: false,
+                        refresh: false
+                    }
+                }
+            },
+            computed: {
+                equipementsFiltres() {
+                    if (!this.searchReconditionnement) {
+                        return this.equipements;
+                    }
+                    
+                    const searchLower = this.searchReconditionnement.toLowerCase();
+                    return this.equipements.filter(item => {
+                        return item.marque.toLowerCase().includes(searchLower) ||
+                               item.modele.toLowerCase().includes(searchLower) ||
+                               item.type.toLowerCase().includes(searchLower);
+                    });
+                }
+            },
+            methods: {
+                async refreshReconditionnement() {
+                    this.loading.refresh = true;
+                    try {
+                        const response = await fetch('/api/reconditionnement');
+                        if (!response.ok) throw new Error('Erreur lors du chargement des données');
+                        this.equipements = await response.json();
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        alert('Erreur lors du chargement des données');
+                    } finally {
+                        this.loading.refresh = false;
+                    }
+                },
+                getEtatLabel(etat) {
+                    const labels = {
+                        'a_reconditionner': 'À reconditionner',
+                        'en_cours': 'En cours',
+                        'reconditionne': 'Reconditionné',
+                        'a_verifier': 'À vérifier',
+                        'fonctionnel': 'Fonctionnel',
+                        'defectueux': 'Défectueux',
+                        'incomplet': 'Incomplet'
+                    };
+                    return labels[etat] || etat;
+                },
+                getStatutLabel(statut) {
+                    const labels = {
+                        'en_attente': 'En attente',
+                        'diagnostic': 'Diagnostic',
+                        'nettoyage': 'Nettoyage',
+                        'reparation': 'Réparation',
+                        'tests': 'Tests',
+                        'logiciels': 'Installation logiciels',
+                        'termine': 'Terminé',
+                        'non_reparable': 'Non réparable'
+                    };
+                    return labels[statut] || statut;
+                },
+                getDepartementNom(code) {
+                    const departements = {
+                        '21': 'Côte-d\'Or',
+                        '25': 'Doubs',
+                        '39': 'Jura',
+                        '58': 'Nièvre',
+                        '70': 'Haute-Saône',
+                        '71': 'Saône-et-Loire',
+                        '89': 'Yonne',
+                        '90': 'Territoire de Belfort'
+                    };
+                    return departements[code] || code;
+                },
+                formatDate(date) {
+                    if (!date) return '';
+                    return new Date(date).toLocaleDateString('fr-FR');
+                },
+                async demarrerReconditionnement(equipement) {
+                    try {
+                        const response = await fetch(`/api/reconditionnement/${equipement.id}/demarrer`, {
+                            method: 'PUT'
+                        });
+                        if (!response.ok) throw new Error('Erreur lors du démarrage du reconditionnement');
+                        await this.refreshReconditionnement();
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        alert('Erreur lors du démarrage du reconditionnement');
+                    }
+                },
+                async terminerReconditionnement(equipement) {
+                    try {
+                        const response = await fetch(`/api/reconditionnement/${equipement.id}/terminer`, {
+                            method: 'PUT'
+                        });
+                        if (!response.ok) throw new Error('Erreur lors de la finalisation du reconditionnement');
+                        await this.refreshReconditionnement();
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        alert('Erreur lors de la finalisation du reconditionnement');
+                    }
+                },
+                showDetails(equipement) {
+                    this.selectedEquipement = JSON.parse(JSON.stringify(equipement));
+                    
+                    if (this.selectedEquipement.diagnostic_date) {
+                        this.selectedEquipement.diagnostic_date = this.selectedEquipement.diagnostic_date.split('T')[0];
+                    }
+                    if (this.selectedEquipement.nettoyage_date) {
+                        this.selectedEquipement.nettoyage_date = this.selectedEquipement.nettoyage_date.split('T')[0];
+                    }
+                    
+                    if (!this.selectedEquipement.composants_remplaces) {
+                        this.selectedEquipement.composants_remplaces = '';
+                    }
+                    if (!this.selectedEquipement.reparations_effectuees) {
+                        this.selectedEquipement.reparations_effectuees = '';
+                    }
+                    if (!this.selectedEquipement.tests_effectues) {
+                        this.selectedEquipement.tests_effectues = '';
+                    }
+                    if (!this.selectedEquipement.logiciels_installes) {
+                        this.selectedEquipement.logiciels_installes = '';
+                    }
+                    
+                    this.showModalDetails = true;
+                },
+                showNotes(equipement) {
+                    this.selectedEquipement = { ...equipement };
+                    this.showModalNotes = true;
+                },
+                async saveDetails() {
+                    if (!this.selectedEquipement) return;
+                    
+                    this.loading.save = true;
+                    try {
+                        const equipementData = { ...this.selectedEquipement };
+                        
+                        if (typeof equipementData.composants_remplaces === 'string') {
+                            equipementData.composants_remplaces = equipementData.composants_remplaces.split('\n').filter(Boolean);
+                        }
+                        if (typeof equipementData.reparations_effectuees === 'string') {
+                            equipementData.reparations_effectuees = equipementData.reparations_effectuees.split('\n').filter(Boolean);
+                        }
+                        if (typeof equipementData.tests_effectues === 'string') {
+                            equipementData.tests_effectues = equipementData.tests_effectues.split('\n').filter(Boolean);
+                        }
+                        if (typeof equipementData.logiciels_installes === 'string') {
+                            equipementData.logiciels_installes = equipementData.logiciels_installes.split('\n').filter(Boolean);
+                        }
+                        
+                        const response = await fetch(`/api/reconditionnement/${this.selectedEquipement.id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(equipementData)
+                        });
+                        
+                        if (!response.ok) throw new Error('Erreur lors de la mise à jour des détails');
+                        
+                        await this.refreshReconditionnement();
+                        this.showModalDetails = false;
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        alert('Erreur lors de la sauvegarde des détails');
+                    } finally {
+                        this.loading.save = false;
+                    }
+                },
+                async saveNotes() {
+                    if (!this.selectedEquipement) return;
+                    
+                    this.loading.save = true;
+                    try {
+                        const response = await fetch(`/api/reconditionnement/${this.selectedEquipement.id}/notes`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ notes: this.selectedEquipement.notes })
+                        });
+                        
+                        if (!response.ok) throw new Error('Erreur lors de l\'enregistrement des notes');
+                        
+                        await this.refreshReconditionnement();
+                        this.showModalNotes = false;
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        alert('Erreur lors de la sauvegarde des notes');
+                    } finally {
+                        this.loading.save = false;
+                    }
+                },
+                async ajouterMateriel() {
+                    try {
+                        const dateArrivee = new Date(this.nouveauMateriel.date_arrivee + 'T' + this.nouveauMateriel.heure_arrivee);
+                        
+                        const materielData = {
+                            ...this.nouveauMateriel,
+                            date_arrivee: dateArrivee.toISOString()
+                        };
+                        
+                        const response = await fetch('/api/reconditionnement', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(materielData)
+                        });
+
+                        if (!response.ok) throw new Error('Erreur lors de l\'ajout du matériel');
+
+                        await this.refreshReconditionnement();
+                        this.showModalAjout = false;
+                        this.nouveauMateriel = {
+                            type: 'Ordinateur fixe',
+                            numero_serie: '',
+                            marque: '',
+                            modele: '',
+                            etat_initial: 'a_verifier',
+                            departement: '',
+                            provenance: '',
+                            date_arrivee: new Date().toISOString().split('T')[0],
+                            heure_arrivee: new Date().toTimeString().slice(0,5)
+                        };
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        alert('Erreur lors de l\'ajout du matériel');
+                    }
+                },
+                getProgressPercentage(item) {
+                    const steps = {
+                        'en_attente': 0,
+                        'diagnostic': 20,
+                        'nettoyage': 40,
+                        'reparation': 60,
+                        'tests': 80,
+                        'logiciels': 90,
+                        'termine': 100,
+                        'non_reparable': 100
+                    };
+                    return steps[item.statut] || 0;
+                },
+                async updateEtape(item, etape) {
+                    try {
+                        const response = await fetch(`/api/reconditionnement/${item.id}/etape/${etape}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                diagnostic_date: item.diagnostic_date,
+                                nettoyage_effectue: item.nettoyage_effectue,
+                                composants_remplaces: item.composants_remplaces,
+                                tests_effectues: item.tests_effectues,
+                                logiciels_installes: item.logiciels_installes
+                            })
+                        });
+                        
+                        if (!response.ok) throw new Error('Erreur lors de la mise à jour de l\'étape');
+                        
+                        // Mettre à jour le statut en fonction de la dernière étape cochée
+                        if (item.logiciels_installes) item.statut = 'logiciels';
+                        else if (item.tests_effectues) item.statut = 'tests';
+                        else if (item.composants_remplaces) item.statut = 'reparation';
+                        else if (item.nettoyage_effectue) item.statut = 'nettoyage';
+                        else if (item.diagnostic_date) item.statut = 'diagnostic';
+                        else item.statut = 'en_attente';
+                        
+                        await this.refreshReconditionnement();
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        alert('Erreur lors de la mise à jour de l\'étape');
+                    }
+                }
+            },
+            mounted() {
+                this.refreshReconditionnement();
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html> 

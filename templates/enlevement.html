@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordi 3.0 - Gestion Éco-Responsable du Matériel Informatique</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-50">
+    <div id="app" v-cloak>
+        {% include 'header.html' %}
+
+        <!-- Notifications -->
+        <div class="fixed top-4 right-4 z-50 space-y-2">
+            <transition-group name="notification">
+                <div v-for="notification in notifications" :key="notification.id"
+                    :class="{
+                        'p-4 rounded-lg shadow-lg max-w-md transform transition-all duration-300': true,
+                        'bg-green-100 text-green-800 border-l-4 border-green-500': notification.type === 'success',
+                        'bg-red-100 text-red-800 border-l-4 border-red-500': notification.type === 'error',
+                        'bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500': notification.type === 'warning'
+                    }">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i :class="{
+                                'fas mr-2': true,
+                                'fa-check-circle': notification.type === 'success',
+                                'fa-exclamation-circle': notification.type === 'error',
+                                'fa-exclamation-triangle': notification.type === 'warning'
+                            }"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">[[ notification.message ]]</p>
+                        </div>
+                    </div>
+                </div>
+            </transition-group>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div v-if="loading.submit || loading.enlevements || loading.stock || loading.delete" 
+            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-4 border-green-600 border-t-transparent mx-auto mb-4"></div>
+                <p class="text-gray-700">Chargement en cours...</p>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <div class="relative">
+            <!-- Image de fond avec overlay -->
+            <div class="absolute inset-0">
+                <img src="{{ url_for('static', filename='images/content/enlevement.jpg') }}" alt="Enlèvement de matériel" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gray-900 bg-opacity-75"></div>
+            </div>
+            
+            <!-- Contenu du hero -->
+            <div class="relative max-w-7xl mx-auto px-4 py-24">
+                <div class="text-center text-white">
+                    <h1 class="text-5xl font-bold mb-6">Service d'Enlèvement<br>Professionnel</h1>
+                    <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">Notre équipe se charge de la collecte et du transport sécurisé de votre matériel informatique, dans le respect des normes environnementales.</p>
+                    <button @click="showModalNouvelEnlevement = true" class="bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 transform hover:scale-105 transition duration-300 text-lg font-semibold">
+                        Planifier un enlèvement
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu Principal -->
+        <div class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <!-- Section Processus -->
+                <div class="mb-16">
+                    <h2 class="text-3xl font-bold mb-12 text-center">Notre Processus d'Enlèvement</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="text-center p-6">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-calendar-alt text-2xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-3">1. Planification</h3>
+                            <p class="text-gray-600">Choisissez la date qui vous convient et remplissez le formulaire de demande.</p>
+                        </div>
+                        <div class="text-center p-6">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-truck-loading text-2xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-3">2. Enlèvement</h3>
+                            <p class="text-gray-600">Notre équipe professionnelle se charge de la collecte sur site.</p>
+                        </div>
+                        <div class="text-center p-6">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-check-circle text-2xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-3">3. Suivi</h3>
+                            <p class="text-gray-600">Suivez l'état de votre demande en temps réel.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section Demandes -->
+                <div>
+                    <h2 class="text-3xl font-bold mb-8 text-center">Suivi des Demandes</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div v-for="demande in enlevements" :key="demande.id" 
+                            class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">[[ demande.entreprise ]]</h3>
+                                        <p class="text-sm text-gray-600 mt-1">[[ getDepartementNom(demande.departement) ]]</p>
+                                    </div>
+                                    <span :class="{
+                                        'px-3 py-1 text-sm rounded-full font-medium': true,
+                                        'bg-yellow-100 text-yellow-800': demande.statut === 'Planifié',
+                                        'bg-blue-100 text-blue-800': demande.statut === 'En cours',
+                                        'bg-green-100 text-green-800': demande.statut === 'Terminé'
+                                    }">[[ demande.statut ]]</span>
+                                </div>
+                                
+                                <div class="space-y-3">
+                                    <div class="flex items-center text-gray-600">
+                                        <i class="fas fa-calendar-alt w-5 text-green-600"></i>
+                                        <span class="ml-2 text-sm">[[ demande.date ]]</span>
+                                    </div>
+                                    <div class="flex items-center text-gray-600">
+                                        <i class="fas fa-clock w-5 text-green-600"></i>
+                                        <span class="ml-2 text-sm">[[ demande.heure ]]</span>
+                                    </div>
+                                    <div class="flex items-center text-gray-600">
+                                        <i class="fas fa-user w-5 text-green-600"></i>
+                                        <span class="ml-2 text-sm">[[ demande.contact ]]</span>
+                                    </div>
+                                    <div class="flex items-center text-gray-600">
+                                        <i class="fas fa-box w-5 text-green-600"></i>
+                                        <span class="ml-2 text-sm">[[ demande.equipements.length ]] type(s) d'équipement</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 flex justify-end space-x-3">
+                                    <button @click="voirDetails(demande)" 
+                                        class="inline-flex items-center px-3 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none transition-colors">
+                                        <i class="fas fa-eye mr-2"></i>
+                                        Détails
+                        </button>
+                                    <button @click="changerStatut(demande)" 
+                                        :class="{
+                                            'inline-flex items-center px-3 py-2 text-sm font-medium rounded-md focus:outline-none transition-colors': true,
+                                            'border border-yellow-600 text-white bg-yellow-600 hover:bg-yellow-700': demande.statut === 'Planifié',
+                                            'border border-blue-600 text-white bg-blue-600 hover:bg-blue-700': demande.statut === 'En cours',
+                                            'border border-green-600 text-white bg-green-600 hover:bg-green-700': demande.statut === 'Terminé'
+                                        }">
+                                        <i :class="{
+                                            'mr-2': true,
+                                            'fas fa-clock': demande.statut === 'Planifié',
+                                            'fas fa-cog': demande.statut === 'En cours',
+                                            'fas fa-box': demande.statut === 'Terminé'
+                                        }"></i>
+                                        [[ demande.statut === 'Planifié' ? 'À traiter' : 
+                                           demande.statut === 'En cours' ? 'En cours' : 'Passer en stock' ]]
+                        </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="enlevements.length === 0" class="md:col-span-2 lg:col-span-3 text-center py-12">
+                            <div class="bg-gray-50 rounded-lg p-8">
+                                <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+                                <p class="text-gray-500 text-lg">Aucune demande d'enlèvement en cours</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Nouvel Enlèvement -->
+        <div v-if="showModalNouvelEnlevement" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-40">
+            <div class="bg-white p-6 rounded-lg shadow-xl max-w-5xl w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Nouvelle demande d'enlèvement</h3>
+                    <button @click="showModalNouvelEnlevement = false" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form @submit.prevent="submitEnlevement" class="space-y-6">
+                    <!-- Informations de base -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Date d'enlèvement *</label>
+                            <input type="date" v-model="nouvelEnlevement.date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Heure d'enlèvement *</label>
+                            <input type="time" v-model="nouvelEnlevement.heure" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Contact *</label>
+                            <input type="text" v-model="nouvelEnlevement.contact" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Département *</label>
+                            <select v-model="nouvelEnlevement.departement" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                <option value="">Sélectionnez un département</option>
+                                <option value="21">Côte-d'Or (21)</option>
+                                <option value="25">Doubs (25)</option>
+                                <option value="39">Jura (39)</option>
+                                <option value="58">Nièvre (58)</option>
+                                <option value="70">Haute-Saône (70)</option>
+                                <option value="71">Saône-et-Loire (71)</option>
+                                <option value="89">Yonne (89)</option>
+                                <option value="90">Territoire de Belfort (90)</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Email *</label>
+                            <input type="email" v-model="nouvelEnlevement.email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Téléphone *</label>
+                            <input type="tel" v-model="nouvelEnlevement.telephone" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Entreprise *</label>
+                            <input type="text" v-model="nouvelEnlevement.entreprise" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Adresse complète *</label>
+                            <input type="text" v-model="nouvelEnlevement.adresse" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    </div>
+
+                    <!-- Section Équipements -->
+                    <div class="mt-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Équipements à enlever</h3>
+                            <button type="button" @click="ajouterEquipement" class="px-3 py-1 bg-green-50 text-green-600 rounded-md text-sm hover:bg-green-100 transition-colors">
+                                + Ajouter un équipement
+                            </button>
+                        </div>
+
+                        <div v-for="(equipement, index) in nouvelEnlevement.equipements" :key="index" class="grid grid-cols-12 gap-3 mb-3 p-3 border border-gray-200 rounded-md bg-gray-50">
+                            <div class="col-span-5">
+                                <label class="block text-xs font-medium mb-1">Type *</label>
+                                <select v-model="equipement.type" class="w-full p-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    <option v-for="type in types_materiel" :key="type" :value="type">
+                                        [[ type ]]
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-xs font-medium mb-1">Quantité *</label>
+                                <input type="number" v-model="equipement.quantite" min="1" class="w-full p-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                            </div>
+                            <div class="col-span-4">
+                                <label class="block text-xs font-medium mb-1">Description</label>
+                                <input type="text" v-model="equipement.description" class="w-full p-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500" placeholder="Détails optionnels">
+                            </div>
+                            <div class="col-span-1 flex items-end justify-center pb-2">
+                                <button type="button" @click="supprimerEquipement(index)" :disabled="nouvelEnlevement.equipements.length <= 1" class="text-red-600 p-1 rounded-md hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Notes supplémentaires</label>
+                        <textarea v-model="nouvelEnlevement.notes" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" placeholder="Informations complémentaires, instructions spéciales, etc."></textarea>
+                    </div>
+
+                    <div class="flex justify-end mt-6">
+                        <button type="submit" :disabled="loading.submit" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:opacity-70">
+                            [[ loading.submit ? 'Envoi en cours...' : 'Planifier l\'enlèvement' ]]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Détails Demande -->
+        <div v-if="showModalDetails" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-40">
+            <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Détails de la demande</h3>
+                    <button @click="showModalDetails = false" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4" v-if="demandeSelectionnee">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Date d'enlèvement</p>
+                            <p class="mt-1">[[ demandeSelectionnee.date ]]</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Heure</p>
+                            <p class="mt-1">[[ demandeSelectionnee.heure ]]</p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-sm font-medium text-gray-500">Entreprise</p>
+                            <p class="mt-1">[[ demandeSelectionnee.entreprise ]]</p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-sm font-medium text-gray-500">Adresse</p>
+                            <p class="mt-1">[[ demandeSelectionnee.adresse ]]</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Département</p>
+                            <p class="mt-1">[[ getDepartementNom(demandeSelectionnee.departement) ]]</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Contact</p>
+                            <p class="mt-1">[[ demandeSelectionnee.contact ]]</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Téléphone</p>
+                            <p class="mt-1">[[ demandeSelectionnee.telephone ]]</p>
+            </div>
+                        <div class="col-span-2">
+                            <p class="text-sm font-medium text-gray-500">Email</p>
+                            <p class="mt-1">[[ demandeSelectionnee.email ]]</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <h4 class="text-lg font-medium mb-3">Équipements</h4>
+                        <div class="space-y-3">
+                            <div v-for="(equipement, index) in demandeSelectionnee.equipements" :key="index" 
+                                class="p-3 bg-gray-50 rounded-md">
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500">Type</p>
+                                        <p class="mt-1">[[ equipement.type ]]</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500">Quantité</p>
+                                        <p class="mt-1">[[ equipement.quantite ]]</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500">Description</p>
+                                        <p class="mt-1">[[ equipement.description || '-' ]]</p>
+                                    </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="demandeSelectionnee.notes" class="mt-6">
+                        <p class="text-sm font-medium text-gray-500">Notes</p>
+                        <p class="mt-1 whitespace-pre-line">[[ demandeSelectionnee.notes ]]</p>
+                    </div>
+
+                    <div class="mt-6">
+                        <p class="text-sm font-medium text-gray-500">Statut</p>
+                        <span :class="{
+                            'px-3 py-1 text-sm rounded-full font-medium inline-block mt-1': true,
+                            'bg-yellow-100 text-yellow-800': demandeSelectionnee.statut === 'Planifié',
+                            'bg-blue-100 text-blue-800': demandeSelectionnee.statut === 'En cours',
+                            'bg-green-100 text-green-800': demandeSelectionnee.statut === 'Terminé'
+                        }">[[ demandeSelectionnee.statut ]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    showModalNouvelEnlevement: false,
+                    showModalDetails: false,
+                    demandeSelectionnee: null,
+                    loading: {
+                        submit: false,
+                        enlevements: false,
+                        stock: false,
+                        delete: false
+                    },
+                    notifications: [],
+                    nouvelEnlevement: {
+                        date: '',
+                        heure: '',
+                        entreprise: '',
+                        adresse: '',
+                        departement: '',
+                        contact: '',
+                        email: '',
+                        telephone: '',
+                        equipements: [
+                            {
+                                type: 'Ordinateur fixe',
+                                quantite: 1,
+                                description: ''
+                            }
+                        ],
+                        notes: ''
+                    },
+                    types_materiel: [
+                        'Ordinateur fixe',
+                        'Ordinateur portable',
+                        'Serveur',
+                        'Tablette',
+                        'Smartphone',
+                        'Imprimante',
+                        'Équipement réseau',
+                        'Autre'
+                    ],
+                    enlevements: []
+                }
+            },
+            methods: {
+                showNotification(message, type = 'success') {
+                    const id = Date.now()
+                    this.notifications.push({ id, message, type })
+                    setTimeout(() => {
+                        this.notifications = this.notifications.filter(n => n.id !== id)
+                    }, 5000)
+                },
+                getDepartementNom(code) {
+                    const departements = {
+                        '21': 'Côte-d\'Or',
+                        '25': 'Doubs',
+                        '39': 'Jura',
+                        '58': 'Nièvre',
+                        '70': 'Haute-Saône',
+                        '71': 'Saône-et-Loire',
+                        '89': 'Yonne',
+                        '90': 'Territoire de Belfort'
+                    }
+                    return departements[code] || code
+                },
+                async submitEnlevement() {
+                    if (!this.nouvelEnlevement.date || !this.nouvelEnlevement.entreprise || 
+                        !this.nouvelEnlevement.contact || !this.nouvelEnlevement.email || 
+                        !this.nouvelEnlevement.telephone || this.nouvelEnlevement.equipements.length === 0) {
+                        this.showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+                        return;
+                    }
+
+                    this.loading.submit = true;
+                    try {
+                        const response = await fetch('/api/enlevements', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.nouvelEnlevement)
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la création de la demande')
+                        }
+
+                        this.showNotification('Demande d\'enlèvement créée avec succès')
+                        this.showModalNouvelEnlevement = false
+                        this.nouvelEnlevement = {
+                            date: '',
+                            heure: '',
+                            entreprise: '',
+                            adresse: '',
+                            departement: '',
+                            contact: '',
+                            email: '',
+                            telephone: '',
+                            equipements: [
+                                {
+                                    type: 'Ordinateur fixe',
+                                    quantite: 1,
+                                    description: ''
+                                }
+                            ],
+                            notes: ''
+                        }
+                        await this.refreshEnlevements()
+                    } catch (error) {
+                        this.showNotification(error.message, 'error')
+                    } finally {
+                        this.loading.submit = false
+                    }
+                },
+                async refreshEnlevements() {
+                    this.loading.enlevements = true
+                    try {
+                        const response = await fetch('/api/enlevements')
+                        this.enlevements = await response.json()
+                    } catch (error) {
+                        console.error('Erreur:', error)
+                        this.showNotification('Erreur lors du chargement des demandes', 'error')
+                    } finally {
+                        this.loading.enlevements = false
+                    }
+                },
+                async changerStatut(demande) {
+                    let nouveauStatut;
+                    let message;
+                    let confirmMessage;
+                    
+                    if (demande.statut === 'Planifié') {
+                        confirmMessage = `Voulez-vous commencer le traitement de la demande pour ${demande.entreprise} ?`;
+                        nouveauStatut = 'En cours';
+                        message = 'La demande est maintenant en cours de traitement';
+                    } else if (demande.statut === 'En cours') {
+                        confirmMessage = `Voulez-vous marquer la demande de ${demande.entreprise} comme terminée ?`;
+                        nouveauStatut = 'Terminé';
+                        message = 'La demande a été marquée comme terminée';
+                    } else if (demande.statut === 'Terminé') {
+                        confirmMessage = `Voulez-vous transférer les équipements de ${demande.entreprise} vers le stock ? Cette action supprimera la demande.`;
+                        if (!confirm(confirmMessage)) {
+                            return;
+                        }
+                        try {
+                            // Ajouter les équipements au stock
+                            for (const equipement of demande.equipements) {
+                                const stockEquipement = {
+                                    type: equipement.type,
+                                    marque: 'À définir',
+                                    modele: 'À définir',
+                                    etat: 'a_reconditionner',
+                                    quantite: equipement.quantite,
+                                    emplacement: {
+                                        zone: 'Reception',
+                                        etagere: '1'
+                                    },
+                                    seuil_alerte: 5,
+                                    description: equipement.description || `Provenant de ${demande.entreprise}`,
+                                    departement: demande.departement
+                                };
+
+                                const stockResponse = await fetch('/api/stock', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify(stockEquipement)
+                                });
+
+                                if (!stockResponse.ok) {
+                                    throw new Error('Erreur lors de l\'ajout au stock');
+                                }
+                            }
+
+                            // Supprimer la demande
+                            const response = await fetch(`/api/enlevements/${demande.id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('Erreur lors de la suppression de la demande');
+                            }
+
+                            this.showNotification('Équipements transférés en stock avec succès');
+                            await this.refreshEnlevements();
+                            return;
+                        } catch (error) {
+                            this.showNotification(error.message, 'error');
+                            return;
+                        }
+                    }
+
+                    if (!confirm(confirmMessage)) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/api/enlevements/${demande.id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                statut: nouveauStatut
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la mise à jour du statut');
+                        }
+
+                        this.showNotification(message);
+                        await this.refreshEnlevements();
+                    } catch (error) {
+                        this.showNotification(error.message, 'error');
+                    }
+                },
+                ajouterEquipement() {
+                    this.nouvelEnlevement.equipements.push({
+                        type: 'Ordinateur fixe',
+                        quantite: 1,
+                        description: ''
+                    });
+                },
+                supprimerEquipement(index) {
+                    if (this.nouvelEnlevement.equipements.length <= 1) return;
+                    this.nouvelEnlevement.equipements.splice(index, 1);
+                },
+                voirDetails(demande) {
+                    this.demandeSelectionnee = demande;
+                    this.showModalDetails = true;
+                }
+            },
+            mounted() {
+                this.refreshEnlevements()
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

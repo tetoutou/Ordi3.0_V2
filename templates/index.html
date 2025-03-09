@@ -11,6 +11,8 @@
 </head>
 <body class="bg-gray-50">
     <div id="app" v-cloak>
+        {% include 'header.html' %}
+
         <!-- Notifications -->
         <div class="fixed top-4 right-4 z-50 space-y-2">
             <transition-group name="notification">
@@ -47,28 +49,6 @@
             </div>
         </div>
 
-        <!-- Navigation -->
-        <nav class="bg-gray-900">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Ordi 3.0" class="h-8">
-                    </div>
-                    <div class="hidden md:flex space-x-8">
-                        <a @click="changeModule('enlevement')" :class="{'text-green-500': currentModule === 'enlevement'}" class="text-gray-300 hover:text-green-500 cursor-pointer">Enlèvement</a>
-                        <a @click="changeModule('stock')" :class="{'text-green-500': currentModule === 'stock'}" class="text-gray-300 hover:text-green-500 cursor-pointer">Stock</a>
-                        <a @click="changeModule('reconditionnement')" :class="{'text-green-500': currentModule === 'reconditionnement'}" class="text-gray-300 hover:text-green-500 cursor-pointer">Reconditionnement</a>
-                        <a @click="changeModule('vente')" :class="{'text-green-500': currentModule === 'vente'}" class="text-gray-300 hover:text-green-500 cursor-pointer">Vente</a>
-                    </div>
-                    <div class="flex items-center">
-                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-                            Connexion
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
         <!-- Hero Section -->
         <div class="bg-gray-900 text-white py-20">
             <div class="max-w-7xl mx-auto px-4">
@@ -95,313 +75,246 @@
                     <p class="text-gray-600 mb-12">Une solution intégrée pour chaque étape du cycle de vie de votre matériel informatique.</p>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                         <div class="p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                            <div class="relative h-48 mb-4 overflow-hidden rounded-lg">
+                                <img src="{{ url_for('static', filename='images/content/enlevement.jpg') }}" alt="Enlèvement de matériel" class="object-cover w-full h-full">
+                            </div>
                             <div class="text-green-600 mb-4">
                                 <i class="fas fa-truck-loading text-4xl"></i>
                             </div>
                             <h3 class="text-xl font-semibold mb-2">Enlèvement</h3>
-                            <p class="text-gray-600">Collecte professionnelle de votre matériel informatique usagé</p>
+                            <p class="text-gray-600">Collecte professionnelle de votre matériel informatique usagé directement dans vos locaux. Service rapide et efficace.</p>
                         </div>
                         <div class="p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
-                            <div class="text-green-600 mb-4">
-                                <i class="fas fa-boxes text-4xl"></i>
+                            <div class="relative h-48 mb-4 overflow-hidden rounded-lg">
+                                <img src="{{ url_for('static', filename='images/content/reconditionnement.jpg') }}" alt="Reconditionnement" class="object-cover w-full h-full">
                             </div>
-                            <h3 class="text-xl font-semibold mb-2">Stock</h3>
-                            <p class="text-gray-600">Gestion optimisée de l'inventaire et traçabilité complète</p>
-                        </div>
-                        <div class="p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
                             <div class="text-green-600 mb-4">
                                 <i class="fas fa-tools text-4xl"></i>
                             </div>
                             <h3 class="text-xl font-semibold mb-2">Reconditionnement</h3>
-                            <p class="text-gray-600">Remise en état et mise à niveau professionnelle</p>
+                            <p class="text-gray-600">Remise en état professionnelle avec diagnostic complet, nettoyage, et mise à niveau des composants.</p>
                         </div>
                         <div class="p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                            <div class="relative h-48 mb-4 overflow-hidden rounded-lg">
+                                <img src="{{ url_for('static', filename='images/content/stock.jpg') }}" alt="Gestion du stock" class="object-cover w-full h-full">
+                            </div>
+                            <div class="text-green-600 mb-4">
+                                <i class="fas fa-boxes text-4xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Stock</h3>
+                            <p class="text-gray-600">Gestion optimisée de l'inventaire avec système de traçabilité complet et alertes de stock en temps réel.</p>
+                        </div>
+                        <div class="p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                            <div class="relative h-48 mb-4 overflow-hidden rounded-lg">
+                                <img src="{{ url_for('static', filename='images/content/vente.jpg') }}" alt="Vente" class="object-cover w-full h-full">
+                            </div>
                             <div class="text-green-600 mb-4">
                                 <i class="fas fa-store text-4xl"></i>
                             </div>
                             <h3 class="text-xl font-semibold mb-2">Vente</h3>
-                            <p class="text-gray-600">Distribution et commercialisation responsable</p>
+                            <p class="text-gray-600">Distribution et commercialisation responsable de matériel reconditionné avec garantie.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Module Enlèvement -->
-        <div v-if="currentModule === 'enlevement'" class="py-16 bg-gray-50">
+        <!-- Nos Solutions -->
+        <div class="bg-gray-50 py-16">
             <div class="max-w-7xl mx-auto px-4">
-                <h2 class="text-3xl font-bold mb-8 text-center">Gestion des Enlèvements</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Formulaire de demande -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-semibold mb-4">Nouvelle demande</h3>
-                            <p class="text-gray-600 mb-6">Planifiez un enlèvement de matériel informatique en quelques clics.</p>
-                            <button @click="showModalNouvelEnlevement = true" class="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 flex items-center justify-center">
-                                <i class="fas fa-plus mr-2"></i>
-                                Planifier l'enlèvement
-                            </button>
+                <h2 class="text-3xl font-bold text-center mb-12">Nos Solutions Éco-Responsables</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <!-- Solution 1 -->
+                    <div class="flex flex-col md:flex-row gap-8 items-center">
+                        <div class="w-full md:w-1/2">
+                            <img src="{{ url_for('static', filename='images/content/solution1.jpg') }}" alt="Diagnostic matériel" class="rounded-lg shadow-lg w-full h-64 object-cover">
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h3 class="text-2xl font-semibold mb-4">Diagnostic Professionnel</h3>
+                            <p class="text-gray-600 mb-4">Notre équipe d'experts réalise un diagnostic complet de votre matériel informatique pour évaluer son potentiel de reconditionnement.</p>
+                            <ul class="space-y-2">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Tests matériels approfondis</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Évaluation des performances</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Rapport détaillé</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
 
-                    <!-- Liste des demandes -->
-                    <div class="lg:col-span-2">
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                            <div class="p-6 border-b border-gray-200">
-                                <h3 class="text-xl font-semibold">Demandes en cours</h3>
+                    <!-- Solution 2 -->
+                    <div class="flex flex-col md:flex-row gap-8 items-center">
+                        <div class="w-full md:w-1/2">
+                            <img src="{{ url_for('static', filename='images/content/solution2.jpg') }}" alt="Reconditionnement" class="rounded-lg shadow-lg w-full h-64 object-cover">
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h3 class="text-2xl font-semibold mb-4">Reconditionnement Expert</h3>
+                            <p class="text-gray-600 mb-4">Nous donnons une seconde vie à votre matériel grâce à nos processus de reconditionnement professionnels.</p>
+                            <ul class="space-y-2">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Nettoyage complet</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Mise à niveau des composants</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Tests de qualité</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Solution 3 -->
+                    <div class="flex flex-col md:flex-row gap-8 items-center">
+                        <div class="w-full md:w-1/2">
+                            <img src="{{ url_for('static', filename='images/content/solution3.jpg') }}" alt="Gestion de stock" class="rounded-lg shadow-lg w-full h-64 object-cover">
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h3 class="text-2xl font-semibold mb-4">Gestion de Stock Intelligente</h3>
+                            <p class="text-gray-600 mb-4">Notre système de gestion de stock vous permet de suivre votre matériel en temps réel.</p>
+                            <ul class="space-y-2">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Traçabilité complète</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Alertes automatiques</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Rapports détaillés</span>
+                                </li>
+                            </ul>
+                        </div>
                             </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entreprise</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        <tr v-for="demande in enlevements" :key="demande.id">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">[[ demande.date ]]</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">[[ demande.entreprise ]]</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <div>[[ demande.contact ]]</div>
-                                                <div class="text-gray-500">[[ demande.telephone ]]</div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span :class="{
-                                                    'px-2 py-1 text-xs rounded-full': true,
-                                                    'bg-yellow-100 text-yellow-800': demande.statut === 'Planifié',
-                                                    'bg-green-100 text-green-800': demande.statut === 'Terminé'
-                                                }">[[ demande.statut ]]</span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                <button v-if="demande.statut !== 'Terminé'"
-                                                    @click="marquerTermine(demande)"
-                                                    class="text-green-600 hover:text-green-900">
-                                                    <i class="fas fa-check mr-1"></i>
-                                                    Terminer
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr v-if="enlevements.length === 0">
-                                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                                                Aucune demande d'enlèvement en cours
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+
+                    <!-- Solution 4 -->
+                    <div class="flex flex-col md:flex-row gap-8 items-center">
+                        <div class="w-full md:w-1/2">
+                            <img src="{{ url_for('static', filename='images/content/solution4.jpg') }}" alt="Distribution responsable" class="rounded-lg shadow-lg w-full h-64 object-cover">
                             </div>
+                        <div class="w-full md:w-1/2">
+                            <h3 class="text-2xl font-semibold mb-4">Distribution Responsable</h3>
+                            <p class="text-gray-600 mb-4">Nous assurons une distribution éthique et responsable du matériel reconditionné.</p>
+                            <ul class="space-y-2">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Garantie incluse</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Service après-vente</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Livraison sécurisée</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Modal Nouvel Enlèvement -->
-            <div v-if="showModalNouvelEnlevement" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold">Planifier un enlèvement</h3>
-                        <button @click="showModalNouvelEnlevement = false" class="text-gray-600 hover:text-gray-800">
-                            <i class="fas fa-times"></i>
-                        </button>
                     </div>
-                    <form @submit.prevent="submitEnlevement" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nom de l'entreprise</label>
-                            <input type="text" v-model="nouvelEnlevement.entreprise" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+
+        <!-- Impact Environnemental -->
+        <div class="bg-green-50 py-16">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12">Notre Impact Environnemental</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <div class="text-green-600 text-4xl mb-4">
+                            <i class="fas fa-leaf"></i>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nom du contact</label>
-                            <input type="text" v-model="nouvelEnlevement.contact" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <h3 class="text-xl font-semibold mb-4">Réduction des Déchets</h3>
+                        <p class="text-gray-600">Plus de 50 tonnes de déchets électroniques évités chaque année grâce au reconditionnement.</p>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" v-model="nouvelEnlevement.email" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <div class="text-green-600 text-4xl mb-4">
+                            <i class="fas fa-solar-panel"></i>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-                            <input type="tel" v-model="nouvelEnlevement.telephone" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <h3 class="text-xl font-semibold mb-4">Énergie Verte</h3>
+                        <p class="text-gray-600">Utilisation d'énergie 100% renouvelable dans nos ateliers de reconditionnement.</p>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Date souhaitée</label>
-                            <input type="date" v-model="nouvelEnlevement.date" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <div class="text-green-600 text-4xl mb-4">
+                            <i class="fas fa-recycle"></i>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Description du matériel</label>
-                            <textarea v-model="nouvelEnlevement.description" required rows="3"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                        <h3 class="text-xl font-semibold mb-4">Économie Circulaire</h3>
+                        <p class="text-gray-600">Promotion active de l'économie circulaire dans le secteur informatique.</p>
                         </div>
-                        <div class="flex justify-end space-x-3 mt-6">
-                            <button type="button" @click="showModalNouvelEnlevement = false"
-                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                                Annuler
-                            </button>
-                            <button type="submit"
-                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                                Envoyer la demande
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
 
-        <!-- Module Stock -->
-        <div v-if="currentModule === 'stock'" class="max-w-7xl mx-auto px-4 py-8">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Formulaire d'ajout -->
-                <div class="lg:col-span-1">
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h2 class="text-2xl font-bold mb-6">Ajouter un équipement</h2>
-                        <form @submit.prevent="submitEquipement" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Type d'équipement</label>
-                                <select v-model="nouvelEquipement.type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
-                                    <option value="Ordinateur">Ordinateur</option>
-                                    <option value="Écran">Écran</option>
-                                    <option value="Imprimante">Imprimante</option>
-                                    <option value="Serveur">Serveur</option>
-                                    <option value="Autre">Autre</option>
-                                </select>
+        <!-- Statistiques -->
+        <div class="bg-gray-900 py-16">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                    <div class="p-6">
+                        <div class="text-green-500 text-4xl font-bold mb-2">2500+</div>
+                        <p class="text-gray-300">Équipements reconditionnés</p>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Marque</label>
-                                <input type="text" v-model="nouvelEquipement.marque" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                    <div class="p-6">
+                        <div class="text-green-500 text-4xl font-bold mb-2">150+</div>
+                        <p class="text-gray-300">Entreprises partenaires</p>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Modèle</label>
-                                <input type="text" v-model="nouvelEquipement.modele" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                    <div class="p-6">
+                        <div class="text-green-500 text-4xl font-bold mb-2">98%</div>
+                        <p class="text-gray-300">Taux de satisfaction</p>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">État</label>
-                                <select v-model="nouvelEquipement.etat" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
-                                    <option value="neuf">Neuf</option>
-                                    <option value="bon">Bon état</option>
-                                    <option value="moyen">État moyen</option>
-                                    <option value="a_reconditionner">À reconditionner</option>
-                                </select>
+                    <div class="p-6">
+                        <div class="text-green-500 text-4xl font-bold mb-2">-75%</div>
+                        <p class="text-gray-300">Impact carbone</p>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Quantité</label>
-                                <input type="number" v-model="nouvelEquipement.quantite" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Zone</label>
-                                    <input type="text" v-model="nouvelEquipement.emplacement.zone" placeholder="ex: A, B, C" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Étagère</label>
-                                    <input type="text" v-model="nouvelEquipement.emplacement.etagere" placeholder="ex: 1, 2, 3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
                                 </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Seuil d'alerte</label>
-                                <input type="number" v-model="nouvelEquipement.seuil_alerte" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Description</label>
-                                <textarea v-model="nouvelEquipement.description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-                                Ajouter au stock
-                            </button>
-                        </form>
-                    </div>
 
-                    <!-- Inventaire et Alertes -->
-                    <div class="lg:col-span-2">
-                        <!-- Alertes de stock -->
-                        <div v-if="alertesStock.length > 0" class="mb-8">
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <h3 class="text-sm font-medium text-yellow-800">
-                                            Alertes de stock bas
-                                        </h3>
-                                        <div class="mt-2 text-sm text-yellow-700">
-                                            <ul class="list-disc pl-5 space-y-1">
-                                                <li v-for="alerte in alertesStock" :key="alerte.id">
-                                                    [[ alerte.marque ]] [[ alerte.modele ]] - Quantité: [[ alerte.quantite ]] (Seuil: [[ alerte.seuil_alerte ]])
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
+        <!-- Témoignages -->
+        <div class="bg-white py-16">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12">Ils nous font confiance</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <img src="{{ url_for('static', filename='images/content/avatar1.jpg') }}" alt="Client" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold">Marie Dubois</h4>
+                                <p class="text-gray-600">Directrice IT - TechCorp</p>
+                            </div>
+                            </div>
+                        <p class="text-gray-600">"Un service professionnel et efficace. La traçabilité du matériel est impeccable et le processus d'enlèvement très bien organisé."</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <img src="{{ url_for('static', filename='images/content/avatar2.jpg') }}" alt="Client" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold">Pierre Martin</h4>
+                                <p class="text-gray-600">Responsable RSE - EcoSolutions</p>
                             </div>
                         </div>
-
-                        <!-- Tableau d'inventaire -->
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <div class="flex justify-between items-center mb-6">
-                                <h2 class="text-2xl font-bold">Inventaire du stock</h2>
-                                <div class="flex space-x-2">
-                                    <button @click="refreshStock" class="p-2 text-gray-600 hover:text-green-600">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                    <div class="relative">
-                                        <input type="text" v-model="searchStock" placeholder="Rechercher..." 
-                                            class="pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
-                                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        <p class="text-gray-600">"Grâce à Ordi 3.0, nous avons considérablement réduit notre impact environnemental tout en optimisant la gestion de notre parc informatique."</p>
                                     </div>
-                                </div>
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <img src="{{ url_for('static', filename='images/content/avatar3.jpg') }}" alt="Client" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold">Sophie Bernard</h4>
+                                <p class="text-gray-600">DSI - InnovTech</p>
                             </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Équipement</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">État</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantité</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Emplacement</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        <tr v-for="equipement in equipementsFiltres" :key="equipement.id">
-                                            <td class="px-6 py-4">
-                                                <div class="font-medium text-gray-900">[[ equipement.marque ]] [[ equipement.modele ]]</div>
-                                                <div class="text-sm text-gray-500">[[ equipement.type ]]</div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <span :class="{
-                                                    'px-2 py-1 text-xs rounded-full': true,
-                                                    'bg-blue-100 text-blue-800': equipement.etat === 'bon',
-                                                    'bg-yellow-100 text-yellow-800': equipement.etat === 'moyen',
-                                                    'bg-red-100 text-red-800': equipement.etat === 'a_reconditionner'
-                                                }">[[ equipement.etat ]]</span>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center">
-                                                    <span class="text-lg font-semibold">[[ equipement.quantite ]]</span>
-                                                    <span class="ml-2 text-sm text-gray-500">unités</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                Zone [[ equipement.emplacement.zone ]] - Étagère [[ equipement.emplacement.etagere ]]
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <button @click="editEquipementItem(equipement)" class="text-blue-600 hover:text-blue-800 mr-2">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button @click="deleteEquipement(equipement.id)" class="text-red-600 hover:text-red-800">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        </div>
+                        <p class="text-gray-600">"Le reconditionnement est de grande qualité et le suivi du stock nous permet une gestion optimale de notre matériel."</p>
                         </div>
                     </div>
                 </div>
@@ -503,8 +416,8 @@
                         <h4 class="text-lg font-semibold mb-4">Services</h4>
                         <ul class="space-y-2 text-gray-400">
                             <li><a href="#" class="hover:text-green-500">Enlèvement</a></li>
-                            <li><a href="#" class="hover:text-green-500">Stock</a></li>
                             <li><a href="#" class="hover:text-green-500">Reconditionnement</a></li>
+                            <li><a href="#" class="hover:text-green-500">Stock</a></li>
                             <li><a href="#" class="hover:text-green-500">Vente</a></li>
                         </ul>
                     </div>

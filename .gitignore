@@ -1,41 +1,66 @@
-# Python bytecode files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Local configuration
+instance/
+.env.local
+.env.*.local
 
 # Distribution / packaging
-dist/
-build/
 *.egg-info/
 
-# Virtual environments
-venv/
-env/
-ENV/
-.env/
-.venv/
-
 # Flask instance folder
-instance/
-
-# Environment variables
-.env
+*.env
 .flaskenv
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
+# Environment variables
+*.env
+.flaskenv
 
 # Log files
 logs/
 *.log
 
 # IDE specific files
-.idea/
-.vscode/
-*.swp
-*.swo
 .DS_Store
 
 # Temporary files

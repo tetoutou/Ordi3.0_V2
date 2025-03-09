@@ -1,0 +1,92 @@
+<!-- Notifications -->
+<div class="fixed top-4 right-4 z-50 space-y-2">
+    <transition-group name="notification">
+        <div v-for="notification in notifications" :key="notification.id"
+            :class="{
+                'p-4 rounded-lg shadow-lg max-w-md transform transition-all duration-300': true,
+                'bg-green-100 text-green-800 border-l-4 border-green-500': notification.type === 'success',
+                'bg-red-100 text-red-800 border-l-4 border-red-500': notification.type === 'error',
+                'bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500': notification.type === 'warning'
+            }">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i :class="{
+                        'fas mr-2': true,
+                        'fa-check-circle': notification.type === 'success',
+                        'fa-exclamation-circle': notification.type === 'error',
+                        'fa-exclamation-triangle': notification.type === 'warning'
+                    }"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium">[[ notification.message ]]</p>
+                </div>
+            </div>
+        </div>
+    </transition-group>
+</div>
+
+<!-- Loading Overlay -->
+<div v-if="loading.submit || loading.enlevements || loading.stock || loading.delete" 
+    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-green-600 border-t-transparent mx-auto mb-4"></div>
+        <p class="text-gray-700">Chargement en cours...</p>
+    </div>
+</div>
+
+<!-- Navigation -->
+<nav class="bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <a href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Ordi 3.0" class="h-8">
+                </a>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="{{ url_for('index') }}" 
+                   class="text-gray-300 hover:text-green-500 px-3 py-2 rounded-md text-sm font-medium {% if request.endpoint == 'index' %}text-green-500{% endif %}">
+                    Accueil
+                </a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('enlevement') }}" 
+                       class="text-gray-300 hover:text-green-500 px-3 py-2 rounded-md text-sm font-medium {% if request.endpoint == 'enlevement' %}text-green-500{% endif %}">
+                        Enlèvement
+                    </a>
+                    {% if current_user.role in ['technicien', 'responsable', 'super_admin'] %}
+                        <a href="/reconditionnement" 
+                           class="text-gray-300 hover:text-green-500 px-3 py-2 rounded-md text-sm font-medium {% if request.endpoint == 'reconditionnement_page' %}text-green-500{% endif %}">
+                            Reconditionnement
+                        </a>
+                        <a href="/stock" 
+                           class="text-gray-300 hover:text-green-500 px-3 py-2 rounded-md text-sm font-medium {% if request.endpoint == 'stock_page' %}text-green-500{% endif %}">
+                            Stock
+                        </a>
+                    {% endif %}
+                    {% if current_user.role in ['responsable', 'super_admin'] %}
+                        <a href="/utilisateurs" 
+                           class="text-gray-300 hover:text-green-500 px-3 py-2 rounded-md text-sm font-medium {% if request.endpoint == 'utilisateurs_page' %}text-green-500{% endif %}">
+                            Utilisateurs
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="flex items-center">
+                {% if current_user.is_authenticated %}
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-300">{{ current_user.prenom }} {{ current_user.nom }}</span>
+                        <a href="{{ url_for('logout') }}" 
+                           class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                            Déconnexion
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" 
+                       class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                        Connexion
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav> 
