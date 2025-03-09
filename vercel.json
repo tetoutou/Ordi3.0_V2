@@ -11,13 +11,5 @@
 			"src": "/(.*)",
 			"dest": "/app.py"
 		}
-	],
-	"Resources": {
-		"Api": {
-			"Type": "AWS::AppSync::Api",
-			"Properties": {
-				"Name": "<String>"
-			}
-		}
-	}
+	]
 }
